@@ -226,7 +226,7 @@ class PasswordResetRequestAPIView(GenericAPIView):
                 'exp': datetime.utcnow() + timedelta(hours=24)
             }
             token = jwt.encode(payload, os.getenv("SECRET_KEY"),
-                               algorithm='HS256').decode()
+                    algorithm='HS256').decode()
 
             # format the email
             host = request.get_host()
@@ -238,7 +238,7 @@ class PasswordResetRequestAPIView(GenericAPIView):
             else:
                 reset_link = protocol + '://' + host + base_url + token
             print("reset>>>>>>"+reset_link)
-            subject = "Password Reset for royalframes Haven Web Portal account"
+            subject = "Password Reset for royalframes media"
             message = render_to_string(
                 'request_password_reset.html', {
                     'email': email,
@@ -279,9 +279,10 @@ class ResetPasswordAPIView(UpdateAPIView):
         request_body=swagger_body(prefix="user", fields=(
             'password',)),
         responses=status_codes(codes=(200, 400)))
-    def patch(self, request, token, **kwargs):
+    def patch(self, request, token, *args, **kwargs):
         # decode the token
-        decoded = GetAuthentication.decode_jwt_token(token)
+        print('hiitoken', token)
+        decoded = GetAuthentication.decode_jwt_token(self, token)
         # use the email to find decode the user instance
         user = User.objects.get(email=decoded['email'])
         # get the password that the user is keying in
@@ -301,19 +302,6 @@ class ResetPasswordAPIView(UpdateAPIView):
             {"message": "pwd_changed"},
             status=status.HTTP_200_OK)
 
-    # by dafault, swagger generates schemas for all endpoints available in
-    # class based views
-    # in this case, UpdateAPIView, has PATCH and PUT endpoints
-    # setting auto_schema to None prevents this(PUT) endpoint from being
-    # included in the swagger docs
-    @swagger_auto_schema(auto_schema=None)
-    def put(self):
-        """
-        Does nothing at the moment.
-
-        It's here for the sake of swagger :-)
-        """
-        pass
 
 
 class SocialSignInSignOut(CreateAPIView):
