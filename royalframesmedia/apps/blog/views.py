@@ -37,7 +37,7 @@ class BlogAPIView(generics.ListCreateAPIView):
 
     def post(self, request):
         """
-            POST /api/v1/Blogs/
+            POST /photography/royalframesmedia/Blog/
         """
         permission_classes = (IsAuthenticated,)
         context = {"request": request}
@@ -58,7 +58,7 @@ class BlogAPIView(generics.ListCreateAPIView):
 
     def get(self, request):
         """
-            GET /api/v1/blogs/
+            GET /photography/royalframesmedia/blog/
         """
         perform_pagination = PaginateContent()
         objs_per_page = perform_pagination.paginate_queryset(
@@ -81,13 +81,13 @@ class SpecificBlog(generics.RetrieveUpdateDestroyAPIView):
 
     def get(self, request, slug, *args, **kwargs):
         """
-            GET /api/v1/blogs/<slug>/
+            GET /photography/royalframesmedia/blog/<slug>/
         """
         try:
             blog = Blog.objects.get(slug=slug)
         except Blog.DoesNotExist:
             raise exceptions.NotFound({
-                "message": 'not_found'
+                "message": 'blog not found'
             })
         # this checks if an istance of read exists
         # if it doesn't then it creates a new one
@@ -101,14 +101,14 @@ class SpecificBlog(generics.RetrieveUpdateDestroyAPIView):
 
     def delete(self, request, slug, *args, **kwargs):
         """
-            DELETE /api/v1/blogs/<slug>/
+            DELETE /photography/royalframesmedia/blog/<slug>/
         """
         permission_classes = (IsAuthenticated,)
         try:
             blog = Blog.objects.get(slug=slug)
         except Blog.DoesNotExist:
             raise exceptions.NotFound({
-                "message": 'not_found'
+                "message": 'blog not found'
             })
         blog.delete()
         return Response({
@@ -117,7 +117,7 @@ class SpecificBlog(generics.RetrieveUpdateDestroyAPIView):
 
     def put(self, request, slug, *args, **kwargs):
         """
-            PUT /api/v1/blogs/<slug>/
+            PUT /photography/royalframesmedia/blog/<slug>/
         """
         permission_classes = (IsAuthenticated,)
         blog = get_object_or_404(Blog.objects.all(), slug=slug)
@@ -134,7 +134,7 @@ class SpecificBlog(generics.RetrieveUpdateDestroyAPIView):
             return Response(
                 [
                     serializer.data,
-                    {"message": 'blog_update'}
+                    {"message": 'blog updated'}
                 ], status=201
             )
         else:
@@ -151,6 +151,6 @@ def get_blog(slug):
     blog = Blog.objects.all().filter(slug=slug).first()
     if blog is None:
         raise exceptions.NotFound({
-            "message": 'not_found'
+            "message": 'blog not found'
         }, status.HTTP_404_NOT_FOUND)
     return blog

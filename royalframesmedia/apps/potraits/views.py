@@ -37,7 +37,7 @@ class PotraitsAPIView(generics.ListCreateAPIView):
 
     def post(self, request):
         """
-            POST /api/v1/Potraitss/
+            POST /photography/royalframesmedia/Potraits/
         """
         permission_classes = (IsAuthenticated,)
         context = {"request": request}
@@ -58,7 +58,7 @@ class PotraitsAPIView(generics.ListCreateAPIView):
 
     def get(self, request):
         """
-            GET /api/v1/potraitss/
+            GET /photography/royalframesmedia/potraits/
         """
         perform_pagination = PaginateContent()
         objs_per_page = perform_pagination.paginate_queryset(
@@ -81,13 +81,13 @@ class SpecificPotrait(generics.RetrieveUpdateDestroyAPIView):
 
     def get(self, request, slug, *args, **kwargs):
         """
-            GET /api/v1/potraitss/<slug>/
+            GET /photography/royalframesmedia/potraits/<slug>/
         """
         try:
             potraits = Potraits.objects.get(slug=slug)
         except Potraits.DoesNotExist:
             raise exceptions.NotFound({
-                "message": 'not_found'
+                "message": 'potrait not found'
             })
         # this checks if an istance of read exists
         # if it doesn't then it creates a new one
@@ -101,14 +101,14 @@ class SpecificPotrait(generics.RetrieveUpdateDestroyAPIView):
 
     def delete(self, request, slug, *args, **kwargs):
         """
-            DELETE /api/v1/potraitss/<slug>/
+            DELETE /photography/royalframesmedia/potraits/<slug>/
         """
         permission_classes = (IsAuthenticated,)
         try:
             potraits = Potraits.objects.get(slug=slug)
         except Potraits.DoesNotExist:
             raise exceptions.NotFound({
-                "message": 'not_found'
+                "message": 'potrait not found'
             })
         potraits.delete()
         return Response({
@@ -117,7 +117,7 @@ class SpecificPotrait(generics.RetrieveUpdateDestroyAPIView):
 
     def put(self, request, slug, *args, **kwargs):
         """
-            PUT /api/v1/potraitss/<slug>/
+            PUT /photography/royalframesmedia/potraits/<slug>/
         """
         permission_classes = (IsAuthenticated,)
         potraits = get_object_or_404(Potraits.objects.all(), slug=slug)
@@ -134,7 +134,7 @@ class SpecificPotrait(generics.RetrieveUpdateDestroyAPIView):
             return Response(
                 [
                     serializer.data,
-                    {"message": 'potraits_update'}
+                    {"message": 'potraits updated'}
                 ], status=201
             )
         else:
@@ -151,6 +151,6 @@ def get_potraits(slug):
     potraits = Potraits.objects.all().filter(slug=slug).first()
     if potraits is None:
         raise exceptions.NotFound({
-            "message": 'not_found'
+            "message": 'potrait not found'
         }, status.HTTP_404_NOT_FOUND)
     return potraits
