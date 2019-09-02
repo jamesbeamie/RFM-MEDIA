@@ -279,28 +279,38 @@ class ResetPasswordAPIView(UpdateAPIView):
         request_body=swagger_body(prefix="user", fields=(
             'password',)),
         responses=status_codes(codes=(200, 400)))
-    def patch(self, request, token, *args, **kwargs):
+    def patch(self, request, *args, **kwargs):
         # decode the token
-        print('hiitoken', token)
-        decoded = GetAuthentication.decode_jwt_token(self, token)
+        # print('hiitoken', token)
+        # decoded = GetAuthentication.decode_jwt_token(self, token)
         # use the email to find decode the user instance
-        user = User.objects.get(email=decoded['email'])
+        user_data = request.data
+        email = user_data['email']
+        # print('muserji', email)
+        user = User.objects.get(email=email)
+        # print('userji', user)
         # get the password that the user is keying in
-        password = request.data['user']['password']
-        # now we validate the password
-        UserValidation.valid_password(self, password)
-        # save the password after we have validated it
-        self.serializer_class.update(
-            None,
-            user,
-            {
-                "password": password
-            }
-        )
-        # Alert the user that the user has completed the password request
+        if user:
+            password = user_data['password']
+            # print('userPWD', password)
+            # now we validate the password
+            UserValidation.valid_password(self, password)
+            # save the password after we have validated it
+            self.serializer_class.update(
+                None,
+                user,
+                {
+                    "password": password
+                }
+            )
+            # Alert the user that the user has completed the password request
+            return Response(
+                {"message": "pwd_changed"},
+                status=status.HTTP_200_OK)
         return Response(
-            {"message": "pwd_changed"},
-            status=status.HTTP_200_OK)
+                {"message": "pwd_not_changed"},
+                status=status.HTTP_404_NOT_FOUND)
+        
 
 
 

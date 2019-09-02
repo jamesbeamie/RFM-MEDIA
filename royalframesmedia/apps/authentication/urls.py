@@ -15,6 +15,6 @@ urlpatterns = [
     path('users/verify/<token>', VerifyAPIView.as_view(), name='email-verify'),
     path('users/password_request/', PasswordResetRequestAPIView.as_view(),
          name="reset_request"),
-    path('users/password_reset/<str:token>',
+    path('users/password_reset/',
          ResetPasswordAPIView.as_view(), name="password_reset"),
 ]

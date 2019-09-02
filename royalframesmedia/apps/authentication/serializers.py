@@ -178,7 +178,7 @@ class ResetPasswordSerializer(serializers.Serializer):
 
     class Meta:
         model = User
-        fields = ['email']
+        fields = "__all__"
 
 
 class SocialSignInSignOutSerializer(serializers.Serializer):
