@@ -37,7 +37,7 @@ class BumpAPIView(generics.ListCreateAPIView):
 
     def post(self, request):
         """
-            POST /api/v1/familys/
+            POST /photography/royalframesmedia/family/
         """
         permission_classes = (IsAuthenticated,)
         context = {"request": request}
@@ -58,7 +58,7 @@ class BumpAPIView(generics.ListCreateAPIView):
 
     def get(self, request):
         """
-            GET /api/v1/familys/
+            GET /photography/royalframesmedia/family/
         """
         perform_pagination = PaginateContent()
         objs_per_page = perform_pagination.paginate_queryset(
@@ -81,13 +81,13 @@ class SpecificBump(generics.RetrieveUpdateDestroyAPIView):
 
     def get(self, request, slug, *args, **kwargs):
         """
-            GET /api/v1/familys/<slug>/
+            GET /photography/royalframesmedia/family/<slug>/
         """
         try:
             family = Family.objects.get(slug=slug)
         except Family.DoesNotExist:
             raise exceptions.NotFound({
-                "message": 'not_found'
+                "message": 'family not found'
             })
         # this checks if an istance of read exists
         # if it doesn't then it creates a new one
@@ -101,14 +101,14 @@ class SpecificBump(generics.RetrieveUpdateDestroyAPIView):
 
     def delete(self, request, slug, *args, **kwargs):
         """
-            DELETE /api/v1/familys/<slug>/
+            DELETE /photography/royalframesmedia/family/<slug>/
         """
         permission_classes = (IsAuthenticated,)
         try:
             family = Family.objects.get(slug=slug)
         except Family.DoesNotExist:
             raise exceptions.NotFound({
-                "message": 'not_found'
+                "message": 'family not found'
             })
         family.delete()
         return Response({
@@ -117,7 +117,7 @@ class SpecificBump(generics.RetrieveUpdateDestroyAPIView):
 
     def put(self, request, slug, *args, **kwargs):
         """
-            PUT /api/v1/familys/<slug>/
+            PUT /photography/royalframesmedia/family/<slug>/
         """
         permission_classes = (IsAuthenticated,)
         family = get_object_or_404(Family.objects.all(), slug=slug)
@@ -134,7 +134,7 @@ class SpecificBump(generics.RetrieveUpdateDestroyAPIView):
             return Response(
                 [
                     serializer.data,
-                    {"message": 'family_update'}
+                    {"message": 'family updated'}
                 ], status=201
             )
         else:
@@ -151,6 +151,6 @@ def get_family(slug):
     family = Family.objects.all().filter(slug=slug).first()
     if family is None:
         raise exceptions.NotFound({
-            "message": 'not_found'
+            "message": 'family not found'
         }, status.HTTP_404_NOT_FOUND)
     return family

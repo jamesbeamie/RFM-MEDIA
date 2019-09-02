@@ -40,7 +40,7 @@ class ChildrenAPIView(generics.ListCreateAPIView):
 
     def post(self, request):
         """
-            POST /api/v1/childrens/
+            POST /photography/royalframesmedia/children/
         """
         permission_classes = (IsAuthenticated,)
         context = {"request": request}
@@ -61,7 +61,7 @@ class ChildrenAPIView(generics.ListCreateAPIView):
 
     def get(self, request):
         """
-            GET /api/v1/childrens/
+            GET /photography/royalframesmedia/children/
         """
         perform_pagination = PaginateContent()
         objs_per_page = perform_pagination.paginate_queryset(
@@ -84,13 +84,13 @@ class SpecificChild(generics.RetrieveUpdateDestroyAPIView):
 
     def get(self, request, slug, *args, **kwargs):
         """
-            GET /api/v1/childrens/<slug>/
+            GET /photography/royalframesmedia/children/<slug>/
         """
         try:
             children = Children.objects.get(slug=slug)
         except Children.DoesNotExist:
             raise exceptions.NotFound({
-                "message": 'not_found'
+                "message": 'Not ound'
             })
         # this checks if an istance of read exists
         # if it doesn't then it creates a new one
@@ -104,14 +104,14 @@ class SpecificChild(generics.RetrieveUpdateDestroyAPIView):
 
     def delete(self, request, slug, *args, **kwargs):
         """
-            DELETE /api/v1/childrens/<slug>/
+            DELETE /photography/royalframesmedia/children/<slug>/
         """
         permission_classes = (IsAuthenticated,)
         try:
             children = Children.objects.get(slug=slug)
         except Children.DoesNotExist:
             raise exceptions.NotFound({
-                "message": 'not_found'
+                "message": 'Not found'
             })
         children.delete()
         return Response({
@@ -120,7 +120,7 @@ class SpecificChild(generics.RetrieveUpdateDestroyAPIView):
 
     def put(self, request, slug, *args, **kwargs):
         """
-            PUT /api/v1/childrens/<slug>/
+            PUT /photography/royalframesmedia/children/<slug>/
         """
         permission_classes = (IsAuthenticated,)
         children = get_object_or_404(Children.objects.all(), slug=slug)
@@ -137,7 +137,7 @@ class SpecificChild(generics.RetrieveUpdateDestroyAPIView):
             return Response(
                 [
                     serializer.data,
-                    {"message": 'children_update'}
+                    {"message": 'children updated'}
                 ], status=201
             )
         else:
@@ -154,6 +154,6 @@ def get_children(slug):
     children = Children.objects.all().filter(slug=slug).first()
     if children is None:
         raise exceptions.NotFound({
-            "message": 'not_found'
+            "message": 'not found'
         }, status.HTTP_404_NOT_FOUND)
     return children
