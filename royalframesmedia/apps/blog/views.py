@@ -43,7 +43,7 @@ class BlogAPIView(generics.ListCreateAPIView):
         context = {"request": request}
         blog = request.data.copy()
         blog['slug'] = BlogSerializer(
-        ).create_slug(request.data['title'])
+        ).create_slug(request.data['tag'])
         serializer = self.serializer_class(data=blog, context=context)
         if serializer.is_valid():
             serializer.save()

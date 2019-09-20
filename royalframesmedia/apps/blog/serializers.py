@@ -20,17 +20,19 @@ class BlogSerializer(serializers.ModelSerializer):
     """
     image_path = serializers.CharField(required=False, default=None)
     title = serializers.CharField(required=True)
+    description = serializers.CharField(required=True)
+    tag = serializers.CharField(required=True)
     body = serializers.CharField(required=True)
 
     class Meta:
         model = Blog
         fields = "__all__"
 
-    def create_slug(self, title):
+    def create_slug(self, tag):
         """
             Create a slag
         """
-        a_slug = slugify(title)
+        a_slug = slugify(tag)
         origin = 1
         unique_slug = a_slug
         while Blog.objects.filter(slug=unique_slug).exists():
