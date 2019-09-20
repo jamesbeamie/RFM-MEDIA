@@ -34,9 +34,8 @@ from .backends import GetAuthentication, JWTokens
 from .models import User
 from .renderers import UserJSONRenderer
 from .serializers import (LoginSerializer, RegistrationSerializer,
-                          ResetPasswordSerializer,
-                          SocialSignInSignOutSerializer, UserSerializer)
-from .utils import status_codes, swagger_body
+                          ResetPasswordSerializer, UserSerializer)
+from .utils import status_codes
 from .validations import UserValidation
 
 
@@ -46,7 +45,6 @@ class RegistrationAPIView(GenericAPIView):
     renderer_classes = (UserJSONRenderer,)
     serializer_class = RegistrationSerializer
 
-    swagger_schema = SwaggerAutoSchema
     # the line above simply sets the swagger schema to be applied in this
     # class.
     # here, we're comfortable using the one defined in settings.py, which
@@ -55,11 +53,6 @@ class RegistrationAPIView(GenericAPIView):
 
     # lets override some properties of the the default schema with our own
     # values
-    @swagger_auto_schema(
-        request_body=swagger_body(prefix="user", fields=(
-            'email', 'username', 'password')),
-        responses=status_codes(codes=(201, 400))
-    )
     def post(self, request):
         """
             POST /users/
@@ -78,7 +71,7 @@ class RegistrationAPIView(GenericAPIView):
         site_url = "http://"+get_current_site(request).domain
         email_url = url if url else site_url
         link_url = email_url + "/verify/{}".format(token)
-        print(link_url)
+        print('guURL',link_url)
         html_page = render_to_string(
             "email_verification.html",
             context={"link": link_url,
@@ -102,14 +95,9 @@ class LoginAPIView(GenericAPIView):
     # the registration endpoint. This is because we don't actually have
     # anything to save. Instead, the `validate` method on our serializer
     # handles everything we need.
-    swagger_schema = SwaggerAutoSchema
 
     # lets override some properties of the the default schema with our own
     # values
-    @swagger_auto_schema(
-        request_body=swagger_body(prefix="user", fields=('email', 'password')),
-        responses=status_codes(codes=(200, 400))
-    )
     def post(self, request):
         user = request.data.get('user', {})
         serializer = self.serializer_class(data=user)
@@ -121,9 +109,7 @@ class UserRetrieveUpdateAPIView(GenericAPIView):
     permission_classes = (IsAuthenticated,)
     renderer_classes = (UserJSONRenderer,)
     serializer_class = UserSerializer
-    swagger_schema = SwaggerAutoSchema
 
-    @swagger_auto_schema(responses=status_codes(codes=(200, 400)))
     def get(self, request, *args, **kwargs):
         # There is nothing to validate or save here. Instead, we just want the
         # serializer to handle turning our `User` object into something that
@@ -133,10 +119,6 @@ class UserRetrieveUpdateAPIView(GenericAPIView):
 
     # lets override some properties of the the default schema with our own
     # values
-    @swagger_auto_schema(
-        request_body=swagger_body(prefix="user", fields=(
-            'email', 'username', 'password')),
-        responses=status_codes(codes=(201, 400)))
     def put(self, request, *args, **kwargs):
         serializer_data = request.data.get('user', {})
 
@@ -152,13 +134,9 @@ class UserRetrieveUpdateAPIView(GenericAPIView):
 class VerifyAPIView(GenericAPIView):
     """Verify endpoint holder"""
     serializer_class = UserSerializer
-    swagger_schema = SwaggerAutoSchema
 
     # lets override some properties of the the default schema with our own
     # values
-    @swagger_auto_schema(
-        responses=status_codes(codes=(200, 404))
-    )
     def get(self, request, token):
         """
             GET /verify/
@@ -186,15 +164,9 @@ class VerifyAPIView(GenericAPIView):
 class PasswordResetRequestAPIView(GenericAPIView):
     """Sends Password reset link to email """
     serializer_class = ResetPasswordSerializer
-    swagger_schema = SwaggerAutoSchema
 
     # lets override some properties of the the default schema with our own
     # values
-    @swagger_auto_schema(
-        request_body=swagger_body(prefix="user", fields=(
-            'email',)),
-        responses=status_codes(codes=(200, 400))
-    )
     def post(self, request):
         user_data = request.data
         email = user_data['email']
@@ -204,12 +176,12 @@ class PasswordResetRequestAPIView(GenericAPIView):
         # if email is not given then an error message is thrown
         if not email.strip():
             return Response({
-                'message': 'no_email',
+                'message': 'no email provided',
             },
                 status=status.HTTP_400_BAD_REQUEST)
         elif re.search(r"^[\w\.\+\-]+\@[\w]+\.[a-z]{2,3}$", email) is None:
             return Response({
-                'message': 'email_format'
+                'message': 'bad email format'
             }, status=status.HTTP_400_BAD_REQUEST)
 
         # Confirms if a user with the given email actually exists
@@ -225,24 +197,12 @@ class PasswordResetRequestAPIView(GenericAPIView):
                 "iat": datetime.now(),
                 'exp': datetime.utcnow() + timedelta(hours=24)
             }
-            token = jwt.encode(payload, os.getenv("SECRET_KEY"),
-                    algorithm='HS256').decode()
-
-            # format the email
-            host = request.get_host()
-            protocol = request.scheme
-            base_url = '/api/v1/users/password_reset/'
-            reset_link = ""
-            if request_site:
-                reset_link = request_site + "/reset-password/" + token
-            else:
-                reset_link = protocol + '://' + host + base_url + token
-            print("reset>>>>>>"+reset_link)
+            #paste frontend link
+            reset_link = 'http://localhost:3000/authenticate-reset'
             subject = "Password Reset for royalframes media"
             message = render_to_string(
                 'request_password_reset.html', {
                     'email': email,
-                    'token': token,
                     'username': str(username).capitalize(),
                     'link': reset_link
                 })
@@ -257,43 +217,27 @@ class PasswordResetRequestAPIView(GenericAPIView):
                 html_message=message,
                 fail_silently=False)
             message = {
-                'Message': 'request_success',
-                'Token': token
+                'Message': 'request successful',
             }
             return Response(message, status=status.HTTP_200_OK)
 
         # If user does not exist then an error is thrown to the user
         return Response({
-            'message': 'unregistered_email'},
+            'message': 'unregistered email'},
             status=status.HTTP_400_BAD_REQUEST)
 
 
 class ResetPasswordAPIView(UpdateAPIView):
     renderer_classes = (UserJSONRenderer,)
     serializer_class = UserSerializer
-    swagger_schema = SwaggerAutoSchema
-
     # lets override some properties of the the default schema with our own
     # values
-    @swagger_auto_schema(
-        request_body=swagger_body(prefix="user", fields=(
-            'password',)),
-        responses=status_codes(codes=(200, 400)))
     def patch(self, request, *args, **kwargs):
-        # decode the token
-        # print('hiitoken', token)
-        # decoded = GetAuthentication.decode_jwt_token(self, token)
-        # use the email to find decode the user instance
         user_data = request.data
         email = user_data['email']
-        # print('muserji', email)
         user = User.objects.get(email=email)
-        # print('userji', user)
-        # get the password that the user is keying in
         if user:
             password = user_data['password']
-            # print('userPWD', password)
-            # now we validate the password
             UserValidation.valid_password(self, password)
             # save the password after we have validated it
             self.serializer_class.update(
@@ -305,101 +249,9 @@ class ResetPasswordAPIView(UpdateAPIView):
             )
             # Alert the user that the user has completed the password request
             return Response(
-                {"message": "pwd_changed"},
+                {"message": "password changed"},
                 status=status.HTTP_200_OK)
         return Response(
-                {"message": "pwd_not_changed"},
+                {"message": "pwd updated unsuccesful"},
                 status=status.HTTP_404_NOT_FOUND)
         
-
-
-
-class SocialSignInSignOut(CreateAPIView):
-    permission_classes = (AllowAny,)
-    renderer_classes = (UserJSONRenderer,)
-    serializer_class = SocialSignInSignOutSerializer
-
-    def post(self, request, *args, **kwargs):
-        """ interrupt social_auth authentication pipeline"""
-        # pass the request to serializer to make it a python object
-        # serializer also catches errors of blank request objects
-        serializer = self.serializer_class(data=request.data)
-        serializer.is_valid(raise_exception=True)
-
-        provider = serializer.data.get('provider', None)
-        strategy = load_strategy(request)  # creates the app instance
-
-        if request.user.is_anonymous:  # make sure the user is not anonymous
-            user = None
-        else:
-            user = request.user
-
-        try:
-            # load backend with strategy and provider from settings(AUTHENTICATION_BACKENDS)
-            backend = load_backend(
-                strategy=strategy, name=provider, redirect_uri=None)
-
-        except MissingBackend as error:
-
-            return Response({
-                "errors": str(error)
-            }, status=status.HTTP_400_BAD_REQUEST)
-
-        try:
-            # check type of oauth provide e.g facebook is BaseOAuth2 twitter is BaseOAuth1
-            if isinstance(backend, BaseOAuth1):
-                # oath1 passes access token and secret
-                access_token = {
-                    "oauth_token": serializer.data.get('access_token'),
-                    "oauth_token_secret": serializer.data.get('access_token_secret'),
-                }
-
-            elif isinstance(backend, BaseOAuth2):
-                # oauth2 only has access token
-                access_token = serializer.data.get('access_token')
-
-        except HTTPError as error:
-            return Response({
-                "error": {
-                    "access_token": "invalid token",
-                    "details": str(error)
-                }
-            }, status=status.HTTP_400_BAD_REQUEST)
-
-        except AuthTokenError as error:
-            return Response({
-                "error": "invalid credentials",
-                "details": str(error)
-            }, status=status.HTTP_400_BAD_REQUEST)
-
-        try:
-            # authenticate the current user
-            # social pipeline associate by email handles already associated exception
-            authenticated_user = backend.do_auth(access_token, user=user)
-
-        except HTTPError as error:
-            # catch any error as a result of the authentication
-            return Response({
-                "error": "Http Error",
-                "details": str(error)
-            }, status=status.HTTP_400_BAD_REQUEST)
-
-        except AuthForbidden as error:
-            return Response({
-                "error": "invalid token",
-                "details": str(error)
-            }, status=status.HTTP_400_BAD_REQUEST)
-
-        if authenticated_user and authenticated_user.is_active:
-            # Check if the user you intend to authenticate is active
-            token = JWTokens.create_token(self, authenticated_user)
-            headers = self.get_success_headers(serializer.data)
-            response = {"email": authenticated_user.email,
-                        "username": authenticated_user.username,
-                        "token": token}
-
-            return Response(response, status=status.HTTP_201_CREATED,
-                            headers=headers)
-        else:
-            return Response({"errors": "Could not authenticate"},
-                            status=status.HTTP_400_BAD_REQUEST)

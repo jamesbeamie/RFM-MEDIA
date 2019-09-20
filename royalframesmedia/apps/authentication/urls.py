@@ -2,8 +2,7 @@ from django.urls import path
 
 from .views import (
     LoginAPIView, RegistrationAPIView, UserRetrieveUpdateAPIView,
-    VerifyAPIView, PasswordResetRequestAPIView, ResetPasswordAPIView,
-    SocialSignInSignOut
+    VerifyAPIView, PasswordResetRequestAPIView, ResetPasswordAPIView
 )
 
 app_name = "auth"

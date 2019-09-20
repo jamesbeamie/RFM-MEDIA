@@ -37,7 +37,7 @@ class EngagementAPIView(generics.ListCreateAPIView):
 
     def post(self, request):
         """
-            POST /api/v1/engagements/
+            POST /photography/royalframesmedia/engagements/
         """
         permission_classes = (IsAuthenticated,)
         context = {"request": request}
@@ -58,7 +58,7 @@ class EngagementAPIView(generics.ListCreateAPIView):
 
     def get(self, request):
         """
-            GET /api/v1/engagements/
+            GET /photography/royalframesmedia/engagements/
         """
         perform_pagination = PaginateContent()
         objs_per_page = perform_pagination.paginate_queryset(
@@ -81,13 +81,13 @@ class SpecificEngagement(generics.RetrieveUpdateDestroyAPIView):
 
     def get(self, request, slug, *args, **kwargs):
         """
-            GET /api/v1/engagements/<slug>/
+            GET /photography/royalframesmedia/engagements/<slug>/
         """
         try:
             engagement = Engagement.objects.get(slug=slug)
         except Engagement.DoesNotExist:
             raise exceptions.NotFound({
-                "message": 'not_found'
+                "message": 'engagements not found'
             })
         # this checks if an istance of read exists
         # if it doesn't then it creates a new one
@@ -101,14 +101,14 @@ class SpecificEngagement(generics.RetrieveUpdateDestroyAPIView):
 
     def delete(self, request, slug, *args, **kwargs):
         """
-            DELETE /api/v1/engagements/<slug>/
+            DELETE /photography/royalframesmedia/engagements/<slug>/
         """
         permission_classes = (IsAuthenticated,)
         try:
             engagement = Engagement.objects.get(slug=slug)
         except Engagement.DoesNotExist:
             raise exceptions.NotFound({
-                "message": 'not_found'
+                "message": 'engagements not found'
             })
         engagement.delete()
         return Response({
@@ -117,7 +117,7 @@ class SpecificEngagement(generics.RetrieveUpdateDestroyAPIView):
 
     def put(self, request, slug, *args, **kwargs):
         """
-            PUT /api/v1/engagements/<slug>/
+            PUT /photography/royalframesmedia/engagements/<slug>/
         """
         permission_classes = (IsAuthenticated,)
         engagement = get_object_or_404(Engagement.objects.all(), slug=slug)
@@ -134,7 +134,7 @@ class SpecificEngagement(generics.RetrieveUpdateDestroyAPIView):
             return Response(
                 [
                     serializer.data,
-                    {"message": 'engagement_update'}
+                    {"message": 'engagement updated'}
                 ], status=201
             )
         else:
@@ -151,6 +151,6 @@ def get_Engagement(slug):
     engagement = Engagement.objects.all().filter(slug=slug).first()
     if engagement is None:
         raise exceptions.NotFound({
-            "message": 'not_found'
+            "message": 'not found'
         }, status.HTTP_404_NOT_FOUND)
     return engagement

@@ -37,7 +37,7 @@ class BumpAPIView(generics.ListCreateAPIView):
 
     def post(self, request):
         """
-            POST /api/v1/bumps/
+            POST /photography/royalframesmedia/bump/
         """
         permission_classes = (IsAuthenticatedOrReadOnly,)
         if permission_classes:
@@ -63,7 +63,7 @@ class BumpAPIView(generics.ListCreateAPIView):
 
     def get(self, request):
         """
-            GET /api/v1/bumps/
+            GET /photography/royalframesmedia/bump/
         """
         perform_pagination = PaginateContent()
         objs_per_page = perform_pagination.paginate_queryset(
@@ -86,13 +86,13 @@ class SpecificBump(generics.RetrieveUpdateDestroyAPIView):
 
     def get(self, request, slug, *args, **kwargs):
         """
-            GET /api/v1/bumps/<slug>/
+            GET /photography/royalframesmedia/bump/<slug>/
         """
         try:
             bump = Bump.objects.get(slug=slug)
         except Bump.DoesNotExist:
             raise exceptions.NotFound({
-                "message": 'not_found'
+                "message": 'Bump not found'
             })
         # this checks if an istance of read exists
         # if it doesn't then it creates a new one
@@ -106,14 +106,14 @@ class SpecificBump(generics.RetrieveUpdateDestroyAPIView):
 
     def delete(self, request, slug, *args, **kwargs):
         """
-            DELETE /api/v1/bumps/<slug>/
+            DELETE /photography/royalframesmedia/bump/<slug>/
         """
         permission_classes = (IsAuthenticated,)
         try:
             bump = Bump.objects.get(slug=slug)
         except Bump.DoesNotExist:
             raise exceptions.NotFound({
-                "message": 'not_found'
+                "message": 'Bump not found'
             })
         bump.delete()
         return Response({
@@ -122,7 +122,7 @@ class SpecificBump(generics.RetrieveUpdateDestroyAPIView):
 
     def put(self, request, slug, *args, **kwargs):
         """
-            PUT /api/v1/bumps/<slug>/
+            PUT /photography/royalframesmedia/bump/<slug>/
         """
         permission_classes = (IsAuthenticated,)
         bump = get_object_or_404(Bump.objects.all(), slug=slug)
@@ -139,7 +139,7 @@ class SpecificBump(generics.RetrieveUpdateDestroyAPIView):
             return Response(
                 [
                     serializer.data,
-                    {"message": 'bump_update'}
+                    {"message": 'bump updated'}
                 ], status=201
             )
         else:
@@ -156,6 +156,6 @@ def get_bump(slug):
     bump = Bump.objects.all().filter(slug=slug).first()
     if bump is None:
         raise exceptions.NotFound({
-            "message": 'not_found'
+            "message": 'Bump not found'
         }, status.HTTP_404_NOT_FOUND)
     return bump
