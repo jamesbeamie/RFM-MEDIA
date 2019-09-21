@@ -26,7 +26,7 @@ SECRET_KEY = '7pgozr2jn7zs_o%i8id6=rddie!*0f0qy3$oy$(8231i^4*@u5'
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ['rfm-api.herokuapp.com']
+ALLOWED_HOSTS = []
 
 # Email config
 EMAIL_HOST = os.getenv("EMAIL_HOST")
