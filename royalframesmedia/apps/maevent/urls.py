@@ -2,7 +2,7 @@ from django.urls import path
 
 from .views import (EventsAPIView, SpecificEvent)
 
-app_name = "events"
+app_name = "maevent"
 
 urlpatterns = [
     path('events/', EventsAPIView.as_view(), name="events"),
