@@ -44,4 +44,5 @@ urlpatterns = [
     path('photography/royalframesmedia/', include('royalframesmedia.apps.family.urls')),
     path('photography/royalframesmedia/', include('royalframesmedia.apps.children.urls')),
     path('photography/royalframesmedia/', include('royalframesmedia.apps.potraits.urls')),
+    path('photography/royalframesmedia/', include('royalframesmedia.apps.events.urls')),
 ]
