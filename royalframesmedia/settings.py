@@ -145,6 +145,7 @@ STATIC_URL = '/static/'
 CORS_ORIGIN_WHITELIST = (
     '0.0.0.0:4000',
     'localhost:4000',
+    'https://royalframesmedia-api.herokuapp.com/photography/royalframesmedia/',
 )
 
 # Tell Django about the custom `User` model we created. The string
