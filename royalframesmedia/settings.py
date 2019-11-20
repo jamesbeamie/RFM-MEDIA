@@ -26,7 +26,7 @@ SECRET_KEY = '7pgozr2jn7zs_o%i8id6=rddie!*0f0qy3$oy$(8231i^4*@u5'
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['royalframesmedia-api.herokuapp.com']
 
 # Email config
 EMAIL_HOST = os.getenv("EMAIL_HOST")
@@ -59,7 +59,6 @@ INSTALLED_APPS = [
     'royalframesmedia.apps.children',
     'royalframesmedia.apps.potraits',
     'royalframesmedia.apps.events',
-    # credits --> https://github.com/axnsan12/drf-yasg
     'drf_yasg',
 ]
 
