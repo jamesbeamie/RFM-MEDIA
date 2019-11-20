@@ -16,7 +16,7 @@ from django.db.models import Avg
 
 class EventsSerializer(serializers.ModelSerializer):
     """
-        Events model serializers
+        Events model serializer
     """
     image_path = serializers.CharField(required=False, default=None)
     title = serializers.CharField(required=True)
