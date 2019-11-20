@@ -58,6 +58,7 @@ INSTALLED_APPS = [
     'royalframesmedia.apps.family',
     'royalframesmedia.apps.children',
     'royalframesmedia.apps.potraits',
+    'royalframesmedia.apps.events',
     # credits --> https://github.com/axnsan12/drf-yasg
     'drf_yasg',
 ]
