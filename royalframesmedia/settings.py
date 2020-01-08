@@ -173,7 +173,7 @@ REST_FRAMEWORK = {
     'DEFAULT_PAGINATION_CLASS': 'rest_framework.pagination.PageNumberPagination',
     # 'DEFAULT_PAGINATION_CLASS': 'rest_framework.pagination.LimitOffsetPagination',
     #This should be fixed on the frontend at most 12
-    'PAGE_SIZE': 100
+    'PAGE_SIZE': 20
 }
 
 # Django-Rest Framework Jwt settings
