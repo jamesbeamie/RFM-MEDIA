@@ -171,7 +171,7 @@ REST_FRAMEWORK = {
     ),
 
     'DEFAULT_PAGINATION_CLASS': 'rest_framework.pagination.PageNumberPagination',
-    #This should be fixed on the frontend
+    #This should be fixed on the frontend at most
     'PAGE_SIZE': 150
 }
 
