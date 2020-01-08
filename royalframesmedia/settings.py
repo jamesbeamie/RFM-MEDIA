@@ -172,7 +172,7 @@ REST_FRAMEWORK = {
 
     'DEFAULT_PAGINATION_CLASS': 'rest_framework.pagination.PageNumberPagination',
     # 'DEFAULT_PAGINATION_CLASS': 'rest_framework.pagination.LimitOffsetPagination',
-    #This should be fixed on the frontend at most 12
+    #This should be fixed on the frontend at most 15
     'PAGE_SIZE': 20
 }
 
