@@ -172,7 +172,7 @@ REST_FRAMEWORK = {
 
     'DEFAULT_PAGINATION_CLASS': 'rest_framework.pagination.PageNumberPagination',
     #This should be fixed on the frontend
-    'PAGE_SIZE': 1000
+    'PAGE_SIZE': 150
 }
 
 # Django-Rest Framework Jwt settings
